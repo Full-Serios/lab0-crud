@@ -26,7 +26,7 @@ export default function Barrios() {
   const columns = [
     { label: 'Nombre', key: 'nombre' },
     { label: 'Tipo', key: 'tipo' },
-    { label: 'Municipio', key: 'Municipio' },
+    { label: 'Municipio', key: 'municipio' },
     { label: 'Editar', key: 'acciones' }
 
   ]
@@ -36,19 +36,19 @@ export default function Barrios() {
       id: 1,
       nombre: 'Ricaurte',
       tipo: 'Urbano',
-      Municipio: 'Moniquira'
+      municipio: 'Moniquira'
     },
     {
       id: 2,
       nombre: 'Ricaurte',
       tipo: 'Urbano',
-      Municipio: 'Moniquira'
+      municipio: 'Moniquira'
     },
     {
       id: 3,
       nombre: 'Ricaurte',
       tipo: 'Urbano',
-      Municipio: 'Moniquira'
+      municipio: 'Moniquira'
     }
   ]
 
@@ -82,7 +82,7 @@ export default function Barrios() {
 
   const filteredData = dataWithActions.filter(barrio =>
     barrio.nombre.toLowerCase().includes(search.toLowerCase()) ||
-    barrio.departamento.toLowerCase().includes(search.toLowerCase())
+    barrio.municipio.toLowerCase().includes(search.toLowerCase())
   )
 
   return (
@@ -96,7 +96,7 @@ export default function Barrios() {
             <div className="flex items-center gap-4">
               <Input
                 type="text"
-                placeholder="Filtra por departamento o capital"
+                placeholder="Filtra por barrio o municipio"
                 variant={'bordered'}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
