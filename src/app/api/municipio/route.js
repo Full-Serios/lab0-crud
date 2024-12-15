@@ -62,7 +62,7 @@ export async function GET() {
                 MUNICIPIO.area_km2, 
                 MUNICIPIO.presupuesto, 
                 MUNICIPIO.poblacion, 
-                DEPARTAMENTO.nombre AS nombre_departamento
+                DEPARTAMENTO.nombre AS departamento
             FROM MUNICIPIO
             JOIN DEPARTAMENTO ON MUNICIPIO.DEPARTAMENTO_id = DEPARTAMENTO.id
         `);

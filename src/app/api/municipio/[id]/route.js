@@ -6,7 +6,6 @@ export async function PUT(request, { params }) {
         const id = await params.id;
         const body = await request.json();
         const {
-            nombre,
             area_km2,
             presupuesto,
             poblacion
@@ -15,13 +14,11 @@ export async function PUT(request, { params }) {
         const result = await dbConnection.query(
             `UPDATE MUNICIPIO 
             SET 
-                nombre = ?, 
                 area_km2 = ?, 
                 presupuesto = ?, 
                 poblacion = ?
             WHERE id = ?`, 
             [
-                nombre, 
                 area_km2, 
                 presupuesto, 
                 poblacion,
@@ -48,3 +45,34 @@ export async function PUT(request, { params }) {
         }, { status: 500 });
     }
 }
+
+// export async function DELETE(request, { params }) {
+//     try {
+//         const id = await params.id;
+
+//         const result = await dbConnection.query(
+//             `DELETE FROM MUNICIPIO WHERE id = ?;`, 
+//             [
+//                 id
+//             ]
+//         );
+
+//         if (result.affectedRows === 0) {
+//             return NextResponse.json({
+//                 message: "Municipio no encontrado"
+//             }, { status: 404 });
+//         }
+
+//         return NextResponse.json({
+//             message: "Municipio eliminado correctamente",
+//             changes: result.changedRows
+//         }, { status: 200 });
+
+//     } catch (error) {
+//         console.error("Error al actualizar municipio:", error);
+//         return NextResponse.json({
+//             message: "Error al actualizar municipio",
+//             error: error.message
+//         }, { status: 500 });
+//     }
+// }
