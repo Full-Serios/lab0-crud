@@ -1,27 +1,26 @@
 'use client'
 
-import { Input, Button } from '@nextui-org/react';
+import { Input, Button } from '@nextui-org/react'
 import TableContent from '../components/table'
 import { useState } from 'react'
 import EditIcon from '../components/EditIcon'
-import Formulario from '../components/form';
+import Formulario from '../components/form'
 
-
-export default function Barrios() {
+export default function Barrios () {
   const [search, setSearch] = useState('')
-  const [estadoForm1, cambiarEstadoForm1] = useState(false);//Form para añadir
-  const [estadoForm2, cambiarEstadoForm2] = useState(false);//Form para editar
+  const [estadoForm1, cambiarEstadoForm1] = useState(false)// Form para añadir
+  const [estadoForm2, cambiarEstadoForm2] = useState(false)// Form para editar
 
   const campos = [
     { label: 'Nombre', placeholder: 'Nombre del barrio', name: 'nombre' },
     { label: 'Tipo', placeholder: 'Tipo de barrio', name: 'area' },
-    { label: 'Municipio', placeholder: 'Municipio donde se encuentra el barrio', name: 'municipio' },
-  ];
+    { label: 'Municipio', placeholder: 'Municipio donde se encuentra el barrio', name: 'municipio' }
+  ]
 
   const camposEditables = [
     { label: 'Nombre', placeholder: 'Nombre del barrio', name: 'nombre' },
-    { label: 'Tipo', placeholder: 'Tipo de barrio', name: 'tipo' },
-  ];
+    { label: 'Tipo', placeholder: 'Tipo de barrio', name: 'tipo' }
+  ]
 
   const columns = [
     { label: 'Nombre', key: 'nombre' },
@@ -61,11 +60,11 @@ export default function Barrios() {
   }
 
   const sendEditForm = (id) => {
-    //logica pa enviar el form al back
+    // logica pa enviar el form al back
   }
 
   const sendAddForm = () => {
-    //cambiarEstadoForm1(!estadoForm1)
+    // cambiarEstadoForm1(!estadoForm1)
   }
   const dataWithActions = data.map((barrio) => ({
     ...barrio,
@@ -113,7 +112,7 @@ export default function Barrios() {
             <div>
               <TableContent
                 columns={columns}
-                data={filteredData} 
+                data={filteredData}
               />
             </div>
             <Formulario

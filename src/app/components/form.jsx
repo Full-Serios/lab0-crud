@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
-import { Input, Button, Text } from '@nextui-org/react';
+import React, { useState } from 'react'
+import { Input, Button } from '@nextui-org/react'
 
-const Formulario = ({ titulo, campos, onSubmit, botonTexto, estado, cambiarEstado}) => {
+const Formulario = ({ titulo, campos, onSubmit, botonTexto, estado, cambiarEstado }) => {
   const [formData, setFormData] = useState(() =>
     campos.reduce((acc, campo) => ({ ...acc, [campo.name]: '' }), {})
-  );
+  )
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
+    const { name, value } = e.target
+    setFormData({ ...formData, [name]: value })
+  }
 
   const handleSubmit = () => {
-    onSubmit(formData);
-  };
+    onSubmit(formData)
+  }
 
   return (
 
@@ -22,8 +22,8 @@ const Formulario = ({ titulo, campos, onSubmit, botonTexto, estado, cambiarEstad
             <div className="w-screen h-screen fixed top-0 left-0 bg-slate-300 bg-opacity-40 flex justify-center items-center">
                 <div className="min-w-96 w-auto h-auto bg-white p-5">
                     <div className="relative">
-                        <button 
-                            onClick={() => cambiarEstado(!estado)} 
+                        <button
+                            onClick={() => cambiarEstado(!estado)}
                             className="top-2 left-2 p-1 hover:bg-gray-200 rounded">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -71,7 +71,7 @@ const Formulario = ({ titulo, campos, onSubmit, botonTexto, estado, cambiarEstad
             </div>
         }
     </>
-    );
-};
+  )
+}
 
-export default Formulario;
+export default Formulario

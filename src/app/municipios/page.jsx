@@ -1,29 +1,28 @@
 'use client'
 
-import { Input, Button } from '@nextui-org/react';
+import { Input, Button } from '@nextui-org/react'
 import TableContent from '../components/table'
 import { useState } from 'react'
 import EditIcon from '../components/EditIcon'
-import Formulario from '../components/form';
+import Formulario from '../components/form'
 
-
-export default function Municipios() {
+export default function Municipios () {
   const [search, setSearch] = useState('')
-  const [estadoForm1, cambiarEstadoForm1] = useState(false);//Form para añadir
-  const [estadoForm2, cambiarEstadoForm2] = useState(false);//Form para editar
+  const [estadoForm1, cambiarEstadoForm1] = useState(false)// Form para añadir
+  const [estadoForm2, cambiarEstadoForm2] = useState(false)// Form para editar
   const campos = [
     { label: 'Nombre', placeholder: 'Nombre del municipio', name: 'nombre' },
     { label: 'Área', placeholder: 'Área en km²', name: 'area' },
     { label: 'Presupuesto', placeholder: 'Presupuesto anual', name: 'presupuesto' },
     { label: 'Poblacion', placeholder: 'Poblacion', name: 'poblacion' },
-    { label: 'Departamento', placeholder: 'Departamento', name: 'departamento' },
-  ];
+    { label: 'Departamento', placeholder: 'Departamento', name: 'departamento' }
+  ]
 
   const camposEditables = [
     { label: 'Área', placeholder: 'Área en km²', name: 'area' },
     { label: 'Presupuesto', placeholder: 'Presupuesto anual', name: 'presupuesto' },
-    { label: 'Poblacion', placeholder: 'Poblacion', name: 'poblacion' },
-  ];
+    { label: 'Poblacion', placeholder: 'Poblacion', name: 'poblacion' }
+  ]
 
   const columns = [
     { label: 'Nombre', key: 'nombre' },
@@ -70,11 +69,11 @@ export default function Municipios() {
   }
 
   const sendEditForm = (id) => {
-    //logica pa enviar el form al back
+    // logica pa enviar el form al back
   }
 
   const sendAddForm = () => {
-    //cambiarEstadoForm1(!estadoForm1)
+    // cambiarEstadoForm1(!estadoForm1)
   }
   const dataWithActions = data.map((municipio) => ({
     ...municipio,
@@ -122,7 +121,7 @@ export default function Municipios() {
             <div>
               <TableContent
                 columns={columns}
-                data={filteredData} 
+                data={filteredData}
               />
             </div>
             <Formulario

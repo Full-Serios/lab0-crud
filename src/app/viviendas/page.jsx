@@ -1,16 +1,15 @@
 'use client'
 
-import { Input, Button } from '@nextui-org/react';
+import { Input, Button } from '@nextui-org/react'
 import TableContent from '../components/table'
 import { useState } from 'react'
 import EditIcon from '../components/EditIcon'
-import Formulario from '../components/form';
+import Formulario from '../components/form'
 
-
-export default function Viviendas() {
+export default function Viviendas () {
   const [search, setSearch] = useState('')
-  const [estadoForm1, cambiarEstadoForm1] = useState(false);//Form para añadir
-  const [estadoForm2, cambiarEstadoForm2] = useState(false);//Form para editar
+  const [estadoForm1, cambiarEstadoForm1] = useState(false)// Form para añadir
+  const [estadoForm2, cambiarEstadoForm2] = useState(false)// Form para editar
   const campos = [
     { label: 'Direccion', placeholder: 'Direccion de la vivienda', name: 'direccion' },
     { label: 'Capacidad', placeholder: 'Capacidad de la vivienda', name: 'capacidad' },
@@ -18,16 +17,16 @@ export default function Viviendas() {
     { label: 'Tipo', placeholder: 'Casa o apartamento', name: 'tipo' },
     { label: 'Estrato', placeholder: 'Estrato de la vivienda', name: 'estrato' },
     { label: 'Barrio', placeholder: 'Barrio donde se ubica la vivienda', name: 'barrio' },
-    { label: 'Municipio', placeholder: 'Municipio donde se ubica la vivienda', name: 'municipio' },
-  ];
+    { label: 'Municipio', placeholder: 'Municipio donde se ubica la vivienda', name: 'municipio' }
+  ]
 
   const camposEditables = [
     { label: 'Capacidad', placeholder: 'Capacidad de la vivienda', name: 'capacidad' },
     { label: 'Niveles', placeholder: 'Niveles', name: 'niveles' },
     { label: 'Tipo', placeholder: 'Casa o apartamento', name: 'tipo' },
-    { label: 'Estrato', placeholder: 'Estrato de la vivienda', name: 'estrato' },
+    { label: 'Estrato', placeholder: 'Estrato de la vivienda', name: 'estrato' }
 
-  ];
+  ]
 
   const columns = [
     { label: 'Direccion', key: 'direccion' },
@@ -38,7 +37,6 @@ export default function Viviendas() {
     { label: 'Barrio', key: 'barrio' }, // Cambia el nombre aquí si lo prefieres
     { label: 'Municipio', key: 'municipio' }, // Cambia el nombre aquí si lo prefieres
     { label: 'Editar', key: 'acciones' } // Cambia el nombre aquí si lo prefieres
-
 
   ]
 
@@ -84,11 +82,11 @@ export default function Viviendas() {
   }
 
   const sendEditForm = (id) => {
-    //logica pa enviar el form al back
+    // logica pa enviar el form al back
   }
 
   const sendAddForm = () => {
-    //cambiarEstadoForm1(!estadoForm1)
+    // cambiarEstadoForm1(!estadoForm1)
   }
   const dataWithActions = data.map((vivienda) => ({
     ...vivienda,
@@ -136,7 +134,7 @@ export default function Viviendas() {
             <div>
               <TableContent
                 columns={columns}
-                data={filteredData} 
+                data={filteredData}
               />
             </div>
             <Formulario
