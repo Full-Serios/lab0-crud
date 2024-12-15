@@ -2,47 +2,35 @@
 
 import { Input } from '@nextui-org/react'
 import TableContent from '../components/table'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
 
 export default function Departamentos () {
   const [search, setSearch] = useState('')
+  const [departamentos, setDepartamentos] = useState([])
+
+  useEffect(() => {
+    const loadDepartamentos = async () => {
+      try {
+        const res = await axios.get('http://localhost:3000/api/departamento')
+        console.log(res.data)
+        setDepartamentos(res.data)
+      } catch (error) {
+        console.error('Error al obtener departamentos:', error)
+      }
+    }
+
+    loadDepartamentos()
+  }, [])
 
   const columns = [
     { label: 'Nombre', key: 'nombre' },
-    { label: 'Capital', key: 'capital' }
+    { label: 'Capital', key: 'municipio_capital_id' }
   ]
 
-  const data = [
-    {
-      id: 1,
-      nombre: 'Boyaca',
-      capital: 'Tunja'
-    },
-    {
-      id: 2,
-      nombre: 'Santander',
-      capital: 'Bucaramanga'
-    },
-    {
-      id: 3,
-      nombre: 'Pasto',
-      capital: 'Nariño'
-    },
-    {
-      id: 4,
-      nombre: 'Antioquia',
-      capital: 'Medellin'
-    },
-    {
-      id: 5,
-      nombre: 'Cauca',
-      capital: 'Popayan'
-    }
-  ]
-
-  const filteredData = data.filter(departamento =>
+  const filteredData = departamentos.filter(departamento =>
     departamento.nombre.toLowerCase().includes(search.toLowerCase()) ||
-    departamento.capital.toLowerCase().includes(search.toLowerCase())
+    departamento.municipio_capital_id.toLowerCase().includes(search.toLowerCase())
   )
 
   return (
