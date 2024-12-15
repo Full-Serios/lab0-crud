@@ -11,7 +11,7 @@ export default function Municipios() {
   const [search, setSearch] = useState('')
   const [estadoForm1, cambiarEstadoForm1] = useState(false);//Form para añadir
   const [estadoForm2, cambiarEstadoForm2] = useState(false);//Form para editar
-  const camposMunicipio = [
+  const campos = [
     { label: 'Nombre', placeholder: 'Nombre del municipio', name: 'nombre' },
     { label: 'Área', placeholder: 'Área en km²', name: 'area' },
     { label: 'Presupuesto', placeholder: 'Presupuesto anual', name: 'presupuesto' },
@@ -129,7 +129,7 @@ export default function Municipios() {
             estado = {estadoForm1}
             cambiarEstado={cambiarEstadoForm1}
             titulo="Registro de Municipio"
-            campos={camposMunicipio}
+            campos={campos}
             onSubmit={sendAddForm}
             botonTexto="Agregar Municipio"
             />
