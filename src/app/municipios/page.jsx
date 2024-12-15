@@ -4,10 +4,26 @@ import { Input, Button } from '@nextui-org/react';
 import TableContent from '../components/table'
 import { useState } from 'react'
 import EditIcon from '../components/EditIcon'
+import Formulario from '../components/form';
 
 
 export default function Municipios() {
   const [search, setSearch] = useState('')
+  const [estadoForm1, cambiarEstadoForm1] = useState(false);//Form para añadir
+  const [estadoForm2, cambiarEstadoForm2] = useState(false);//Form para editar
+  const camposMunicipio = [
+    { label: 'Nombre', placeholder: 'Nombre del municipio', name: 'nombre' },
+    { label: 'Área', placeholder: 'Área en km²', name: 'area' },
+    { label: 'Presupuesto', placeholder: 'Presupuesto anual', name: 'presupuesto' },
+    { label: 'Poblacion', placeholder: 'Poblacion', name: 'poblacion' },
+    { label: 'Departamento', placeholder: 'Departamento', name: 'departamento' },
+  ];
+
+  const camposEditables = [
+    { label: 'Área', placeholder: 'Área en km²', name: 'area' },
+    { label: 'Presupuesto', placeholder: 'Presupuesto anual', name: 'presupuesto' },
+    { label: 'Poblacion', placeholder: 'Poblacion', name: 'poblacion' },
+  ];
 
   const columns = [
     { label: 'Nombre', key: 'nombre' },
@@ -15,7 +31,7 @@ export default function Municipios() {
     { label: 'Presupuesto', key: 'presupuesto' },
     { label: 'Poblacion', key: 'poblacion' },
     { label: 'Departamento', key: 'departamento' },
-    { label: 'Acciones', key: 'acciones' } // Cambia el nombre aquí si lo prefieres
+    { label: 'Editar', key: 'acciones' } // Cambia el nombre aquí si lo prefieres
   ]
 
   const data = [
@@ -45,19 +61,26 @@ export default function Municipios() {
     }
   ]
 
-  const handleEdit = (id) => {
-    console.log(`Editar municipio con ID: ${id}`)
+  const openEditForm = (id) => {
+    cambiarEstadoForm2(!estadoForm2)
   }
 
-  const handleAddMunicipio = () => {
-    console.log("Añadir un nuevo municipio")
+  const openAddForm = () => {
+    cambiarEstadoForm1(!estadoForm1)
   }
 
+  const sendEditForm = (id) => {
+    //logica pa enviar el form al back
+  }
+
+  const sendAddForm = () => {
+    //cambiarEstadoForm1(!estadoForm1)
+  }
   const dataWithActions = data.map((municipio) => ({
     ...municipio,
     acciones: (
       <button
-        onClick={() => handleEdit(municipio.id)}
+        onClick={() => openEditForm(municipio.id)}
         className="p-2 text-blue-500 hover:text-blue-700"
         title="Editar"
       >
@@ -88,7 +111,7 @@ export default function Municipios() {
                 onChange={(e) => setSearch(e.target.value)}
               />
               <Button
-                onClick={handleAddMunicipio}
+                onClick={openAddForm}
                 className="w-1/4"
                 color="primary"
                 auto
@@ -102,6 +125,22 @@ export default function Municipios() {
                 data={filteredData} 
               />
             </div>
+            <Formulario
+            estado = {estadoForm1}
+            cambiarEstado={cambiarEstadoForm1}
+            titulo="Registro de Municipio"
+            campos={camposMunicipio}
+            onSubmit={sendAddForm}
+            botonTexto="Agregar Municipio"
+            />
+            <Formulario
+            estado = {estadoForm2}
+            cambiarEstado={cambiarEstadoForm2}
+            titulo="Editar Municipio"
+            campos={camposEditables}
+            onSubmit={sendEditForm}
+            botonTexto="Editar Municipio"
+            />
           </div>
         </div>
       </main>
