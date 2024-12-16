@@ -187,7 +187,7 @@ export default function Municipios () {
   )
 
   return (
-    <div className='items-center h-screen justify-items-center p-8 pb-20 gap-16 '>
+    <div className='items-center h-screen justify-items-center p-8 pb-20 gap-16 overflow-y-auto scrollbar-hide'>
       <main className="flex gap-8 justify-center w-full">
         <div className='flex flex-col justify-evenly w-1/2 items-center gap-6'>
           <h1 className='title'>
