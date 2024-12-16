@@ -1,6 +1,6 @@
 import { Input, Button, Select, SelectItem } from '@nextui-org/react'
 import { useEffect } from 'react'
-import { set, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 

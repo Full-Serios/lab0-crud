@@ -2,75 +2,151 @@
 
 import { Input, Button } from '@nextui-org/react'
 import TableContent from '../components/table'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import EditIcon from '../components/EditIcon'
 import Formulario from '../components/form'
+import axios from 'axios'
 
 export default function Barrios () {
   const [search, setSearch] = useState('')
   const [estadoForm1, cambiarEstadoForm1] = useState(false)// Form para añadir
   const [estadoForm2, cambiarEstadoForm2] = useState(false)// Form para editar
 
-  const campos = [
-    { label: 'Nombre', placeholder: 'Nombre del barrio', name: 'nombre' },
-    { label: 'Tipo', placeholder: 'Tipo de barrio', name: 'area' },
-    { label: 'Municipio', placeholder: 'Municipio donde se encuentra el barrio', name: 'municipio' }
-  ]
+  const [barrios, setBarrios] = useState([])
+  const [barrioToEdit, setBarrioToEdit] = useState(null)
 
-  const camposEditables = [
-    { label: 'Nombre', placeholder: 'Nombre del barrio', name: 'nombre' },
-    { label: 'Tipo', placeholder: 'Tipo de barrio', name: 'tipo' }
-  ]
+  const [campos, setCampos] = useState(
+    [
+      {
+        label: 'Nombre',
+        placeholder: 'Nombre del barrio',
+        name: 'nombre',
+        type: 'text',
+        validations: {
+          required: {
+            value: true,
+            message: 'Este campo es requerido'
+          }
+        }
+      },
+      {
+        label: 'Tipo',
+        placeholder: 'Tipo de barrio',
+        name: 'tipo',
+        type: 'select',
+        options: [
+          { id: 'Urbano', name: 'Urbano' },
+          { id: 'Rural', name: 'Rural' }
+        ]
+      },
+      {
+        label: 'Municipio',
+        placeholder: 'Municipio donde se encuentra el barrio',
+        name: 'MUNICIPIO_id',
+        type: 'select',
+        options: [],
+        validations: {
+          required: {
+            value: true,
+            message: 'Este campo es requerido'
+          }
+        }
+      }
+    ]
+  )
+
+  // Fetch barrios
+  useEffect(() => {
+    const loadBarrios = async () => {
+      try {
+        const res = await axios.get('http://localhost:3000/api/barrio')
+        setBarrios(res.data)
+      } catch (error) {
+        console.error('Error al obtener barrios: ', error)
+      }
+    }
+
+    loadBarrios()
+  }, [])
+
+  // Fetch municipios options
+  useEffect(() => {
+    const loadMunicipios = async () => {
+      try {
+        const res = await axios.get('http://localhost:3000/api/municipio')
+        const municipiosData = res.data
+
+        const options = municipiosData.map((muni) => ({
+          id: muni.id,
+          name: muni.nombre
+        }))
+
+        setCampos((prevCampos) =>
+          prevCampos.map((campo) =>
+            campo.name === 'MUNICIPIO_id'
+              ? { ...campo, options }
+              : campo
+          )
+        )
+      } catch (error) {
+        console.error('Error al obtener municipios: ', error)
+      }
+    }
+
+    loadMunicipios()
+  }, [])
+
+  const camposEditables = campos.filter(campo =>
+    campo.name === 'nombre' || campo.name === 'tipo'
+  )
 
   const columns = [
     { label: 'Nombre', key: 'nombre' },
     { label: 'Tipo', key: 'tipo' },
     { label: 'Municipio', key: 'municipio' },
     { label: 'Editar', key: 'acciones' }
-
   ]
 
-  const data = [
-    {
-      id: 1,
-      nombre: 'Ricaurte',
-      tipo: 'Urbano',
-      municipio: 'Moniquira'
-    },
-    {
-      id: 2,
-      nombre: 'Ricaurte',
-      tipo: 'Urbano',
-      municipio: 'Moniquira'
-    },
-    {
-      id: 3,
-      nombre: 'Ricaurte',
-      tipo: 'Urbano',
-      municipio: 'Moniquira'
-    }
-  ]
-
-  const openEditForm = (id) => {
+  const openEditForm = (barrio) => {
     cambiarEstadoForm2(!estadoForm2)
+    setBarrioToEdit(barrio)
   }
 
   const openAddForm = () => {
     cambiarEstadoForm1(!estadoForm1)
   }
 
-  const sendEditForm = (id) => {
-    // logica pa enviar el form al back
+  const sendEditForm = async (data) => {
+    try {
+      const res = await axios.put(`http://localhost:3000/api/barrio/${data.id}`, data, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      return { type: 'success', message: res.data.message }
+    } catch (error) {
+      return { type: 'error', message: 'Error al editar el barrio' }
+    }
   }
 
-  const sendAddForm = () => {
-    // cambiarEstadoForm1(!estadoForm1)
+  const sendAddForm = async (data) => {
+    try {
+      const res = await axios.post('http://localhost:3000/api/barrio', data, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      return { type: 'success', message: res.data.message }
+    } catch (error) {
+      return { type: 'error', message: 'Error al registrar el barrio' }
+    }
   }
-  const dataWithActions = data.map((barrio) => ({
+
+  const dataWithActions = barrios.map((barrio) => ({
     ...barrio,
     acciones: (
       <button
-        onClick={() => openEditForm(barrio.id)}
+        onClick={() => openEditForm(barrio)}
         className="p-2 text-blue-500 hover:text-blue-700"
         title="Editar"
       >
@@ -85,7 +161,7 @@ export default function Barrios () {
   )
 
   return (
-    <div className='items-center h-screen justify-items-center p-8 pb-20 gap-16 '>
+    <div className='items-center h-screen justify-items-center p-8 pb-20 gap-16 overflow-y-auto scrollbar-hide'>
       <main className="flex gap-8 justify-center w-full">
         <div className='flex flex-col justify-evenly w-1/2 items-center gap-6'>
           <h1 className='title'>
@@ -120,7 +196,7 @@ export default function Barrios () {
             cambiarEstado={cambiarEstadoForm1}
             titulo="Registro de Barrio"
             campos={campos}
-            onSubmit={sendAddForm}
+            action={sendAddForm}
             botonTexto="Agregar Barrio"
             />
             <Formulario
@@ -128,7 +204,8 @@ export default function Barrios () {
             cambiarEstado={cambiarEstadoForm2}
             titulo="Editar Barrio"
             campos={camposEditables}
-            onSubmit={sendEditForm}
+            values={barrioToEdit}
+            action={sendEditForm}
             botonTexto="Editar Barrio"
             />
           </div>
