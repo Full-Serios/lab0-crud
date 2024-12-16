@@ -15,7 +15,10 @@
     "next": "15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "serverless-mysql": "^1.5.5"
+    "react-hook-form": "^7.54.1",
+    "react-toastify": "^10.0.6",
+    "serverless-mysql": "^1.5.5",
+    "sonner": "^1.7.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
