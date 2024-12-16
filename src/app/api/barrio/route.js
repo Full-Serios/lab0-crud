@@ -50,7 +50,15 @@ export async function POST (request) {
 
 export async function GET () {
   try {
-    const result = await dbConnection.query('SELECT * FROM BARRIO')
+    const result = await dbConnection.query(`
+        SELECT
+            BARRIO.id,
+            BARRIO.nombre,
+            BARRIO.tipo,
+            MUNICIPIO.nombre AS municipio
+        FROM BARRIO
+        JOIN MUNICIPIO ON BARRIO.MUNICIPIO_id = MUNICIPIO.id
+      `)
     return NextResponse.json(result)
   } catch (error) {
     console.error('Error al obtener municipios:', error)
