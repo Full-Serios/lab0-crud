@@ -88,6 +88,8 @@ const Formulario = ({ titulo, campos, botonTexto, estado, cambiarEstado, action,
                           placeholder={campo.placeholder}
                           name={campo.name}
                           {...register(campo.name, campo.validations)}
+                          isInvalid={errors[campo.name] && true}
+                          errorMessage={errors[campo.name]?.message}
                         >
                           {campo.options.map(option => (
                           <SelectItem key={option.id} value={option.id} textValue={option.name}>
@@ -95,7 +97,6 @@ const Formulario = ({ titulo, campos, botonTexto, estado, cambiarEstado, action,
                           </SelectItem>
                           ))}
                         </Select>
-                        {errors[campo.name] && (<span className="text-red-500 text-sm font-medium">{errors[campo.name].message}</span>)}
                       </div>
                       )
                     : (
@@ -107,8 +108,9 @@ const Formulario = ({ titulo, campos, botonTexto, estado, cambiarEstado, action,
                           placeholder={campo.placeholder}
                           name={campo.name}
                           {...register(campo.name, campo.validations)}
+                          isInvalid={errors[campo.name] && true}
+                          errorMessage={errors[campo.name]?.message}
                         />
-                          {errors[campo.name] && (<span className="text-red-500 text-sm font-medium">{errors[campo.name].message}</span>)}
                       </div>
                       )
                 ))}
