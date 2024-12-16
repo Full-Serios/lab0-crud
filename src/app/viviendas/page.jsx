@@ -15,8 +15,6 @@ export default function Viviendas () {
   const [viviendas, setViviendas] = useState([])
   const [viviendaToEdit, setViviendaToEdit] = useState(null)
 
-  const [barrios, setBarrios] = useState([])
-
   const [campos, setCampos] = useState(
     [
       {

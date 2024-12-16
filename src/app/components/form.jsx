@@ -47,9 +47,9 @@ const Formulario = ({ titulo, campos, botonTexto, estado, cambiarEstado, action,
   return (
     <>
       {estado &&
-        <div className="w-screen h-screen fixed top-0 left-0 bg-slate-300 bg-opacity-40 flex justify-center items-center">
+        <div className="w-screen h-screen fixed top-0 left-0 bg-slate-300 bg-opacity-40 flex justify-center items-center overflow-y-auto">
           <form onSubmit={onSubmit} noValidate>
-            <div className="min-w-96 w-auto h-auto bg-white p-5">
+            <div className="min-w-96 w-auto h-auto bg-white p-5 overflow-auto rounded-lg">
               <div className="relative">
                 <button
                   onClick={() => {
