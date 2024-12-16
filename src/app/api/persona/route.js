@@ -5,6 +5,7 @@ export async function POST(request) {
     try {
         const body = await request.json();
         const {
+            id,
             nombre,
             apellido,
             telefono,
@@ -17,8 +18,8 @@ export async function POST(request) {
 
         // Verifica si ya existe una persona con ese teléfono
         const existingPersona = await dbConnection.query(
-            `SELECT * FROM PERSONA WHERE telefono = ?`,
-            [telefono]
+            `SELECT * FROM PERSONA WHERE id = ?`,
+            [id]
         );
 
         // Si ya existe devuelve error
@@ -68,9 +69,10 @@ export async function POST(request) {
             // Insertar la persona
             const resultPersona = await dbConnection.query(
                 `INSERT INTO PERSONA
-                (nombre, apellido, telefono, edad, sexo, MUNICIPIO_id, VIVIENDA_id, PERSONA_cabeza_familia_id)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                (id, nombre, apellido, telefono, edad, sexo, MUNICIPIO_id, VIVIENDA_id, PERSONA_cabeza_familia_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                 [
+                    id,
                     nombre,
                     apellido,
                     telefono,
