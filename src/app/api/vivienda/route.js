@@ -62,7 +62,25 @@ export async function POST (request) {
 
 export async function GET () {
   try {
-    const result = await dbConnection.query('SELECT * FROM VIVIENDA')
+    const result = await dbConnection.query(`
+            SELECT
+                V.id,
+                V.direccion,
+                V.capacidad,
+                V.niveles,
+                V.tipo,
+                V.estrato,
+                B.nombre AS barrio_nombre,
+                M.nombre AS municipio_nombre,
+                V.BARRIO_id,
+                V.MUNICIPIO_id
+            FROM
+                VIVIENDA V
+            JOIN
+                BARRIO B ON V.BARRIO_id = B.id
+            JOIN
+                MUNICIPIO M ON V.MUNICIPIO_id = M.id
+        `)
     return NextResponse.json(result)
   } catch (error) {
     console.error('Error al obtener viviendas:', error)
