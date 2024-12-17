@@ -1,12 +1,13 @@
 import { Input, Button, Select, SelectItem } from '@nextui-org/react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
-const Formulario = ({ titulo, campos, botonTexto, estado, cambiarEstado, action, values }) => {
+const Formulario = ({ titulo, campos, botonTexto, estado, cambiarEstado, action, values, setSelect }) => {
   // Hook to manage form data
-  const { register, handleSubmit, formState: { errors }, reset } = useForm()
+  const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm()
+  const [isEnable, setIsEnable] = useState(true)
 
   useEffect(() => {
     if (values) {
@@ -20,6 +21,8 @@ const Formulario = ({ titulo, campos, botonTexto, estado, cambiarEstado, action,
         return [key, value === '' || value === undefined || value === null ? null : value]
       })
     )
+
+    setIsEnable(false)
 
     const response = await action(cleanedData)
 
@@ -90,9 +93,14 @@ const Formulario = ({ titulo, campos, botonTexto, estado, cambiarEstado, action,
                           {...register(campo.name, campo.validations)}
                           isInvalid={errors[campo.name] && true}
                           errorMessage={errors[campo.name]?.message}
+                          onChange={(e) => {
+                            setValue(campo.name, e.target.value)
+
+                            if (campo.name === 'MUNICIPIO_id' && (titulo === 'Registro de Vivienda' || titulo === 'Registro de Persona' || titulo === 'Editar Persona')) setSelect(e.target.value)
+                          }}
                         >
                           {campo.options.map(option => (
-                          <SelectItem key={option.id} value={option.id} textValue={option.name}>
+                            <SelectItem key={option.id} value={option.id} textValue={option.name}>
                             {option.name}
                           </SelectItem>
                           ))}
@@ -121,6 +129,7 @@ const Formulario = ({ titulo, campos, botonTexto, estado, cambiarEstado, action,
                   className="w-auto"
                   color="primary"
                   auto
+                  isDisabled={!isEnable}
                 >
                   {botonTexto}
                 </Button>

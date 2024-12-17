@@ -14,6 +14,8 @@ export default function Personas () {
 
   const [personaToEdit, setPersonaToEdit] = useState(null)
   const [personas, setPersonas] = useState([])
+
+  const [municipioSelect, setMunicipioSelect] = useState(0)
   const [campos, setCampos] = useState(
     [
       {
@@ -147,27 +149,60 @@ export default function Personas () {
     ]
   )
 
-  const loadViviendas = async () => {
-    try {
-      const res = await axios.get('http://localhost:3000/api/vivienda')
-      const viviendasData = res.data
-
-      const options = viviendasData.map((viv) => ({
-        id: viv.id,
-        name: viv.direccion
-      }))
-
-      setCampos((prevCampos) =>
-        prevCampos.map((campo) =>
-          campo.name === 'VIVIENDA_id'
-            ? { ...campo, options }
-            : campo
-        )
-      )
-    } catch (error) {
-      console.error('Error al obtener viviendas: ', error)
+  const [camposEditables, setCamposEditables] = useState([
+    {
+      label: 'Telefono',
+      placeholder: 'Telefono',
+      name: 'telefono',
+      type: 'number',
+      validations: {
+        pattern: {
+          value: /^3\d{9}$/,
+          message: 'El número debe iniciar con 3 y tener 10 dígitos'
+        },
+        validate: {
+          isInteger: value =>
+            Number.isInteger(Number(value)) || 'El número debe ser un entero'
+        }
+      }
+    },
+    {
+      label: 'Sexo',
+      placeholder: 'Sexo',
+      name: 'sexo',
+      type: 'select',
+      options: [
+        { id: 'Masculino', name: 'Masculino' },
+        { id: 'Femenino', name: 'Femenino' }
+      ]
+    },
+    {
+      label: 'Municipio',
+      placeholder: 'Municipio de residencia',
+      name: 'MUNICIPIO_id',
+      type: 'select',
+      options: [],
+      validations: {
+        required: {
+          value: true,
+          message: 'Este campo es requerido'
+        }
+      }
+    },
+    {
+      label: 'Vivienda',
+      placeholder: 'Dirección de residencia',
+      name: 'VIVIENDA_id',
+      type: 'select',
+      options: [],
+      validations: {
+        required: {
+          value: true,
+          message: 'Este campo es requerido'
+        }
+      }
     }
-  }
+  ])
 
   const loadMunicipios = async () => {
     try {
@@ -175,11 +210,18 @@ export default function Personas () {
       const municipiosData = res.data
 
       const options = municipiosData.map((muni) => ({
-        id: muni.id,
+        id: muni.id.toString(),
         name: muni.nombre
       }))
 
       setCampos((prevCampos) =>
+        prevCampos.map((campo) =>
+          campo.name === 'MUNICIPIO_id'
+            ? { ...campo, options }
+            : campo
+        )
+      )
+      setCamposEditables((prevCampos) =>
         prevCampos.map((campo) =>
           campo.name === 'MUNICIPIO_id'
             ? { ...campo, options }
@@ -200,19 +242,53 @@ export default function Personas () {
     }
   }
 
+  const loadVivienda = async (municipioId) => {
+    try {
+      const res = await axios.get(`http://localhost:3000/api/vivienda?municipioId=${municipioId}`)
+      const viviendaData = res.data
+
+      const options = viviendaData.map((vivienda) => ({
+        id: vivienda.id.toString(),
+        name: vivienda.direccion
+      }))
+
+      setCampos((prevCampos) =>
+        prevCampos.map((campo) =>
+          campo.name === 'VIVIENDA_id'
+            ? { ...campo, options }
+            : campo
+        )
+      )
+      setCamposEditables((prevCampos) =>
+        prevCampos.map((campo) =>
+          campo.name === 'VIVIENDA_id'
+            ? { ...campo, options }
+            : campo
+        )
+      )
+    } catch (error) {
+      console.error('Error al obtener viviendas: ', error)
+    }
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       await loadMunicipios()
-      await loadViviendas()
       await loadPersonas()
     }
 
     fetchData()
   }, [])
 
-  const camposEditables = campos.filter(campo =>
-    campo.name === 'telefono' || campo.name === 'sexo' || campo.name === 'MUNICIPIO_id'
-  )
+  useEffect(() => {
+    const fetchData = async () => {
+      if (municipioSelect) {
+        await loadVivienda(municipioSelect)
+      }
+    }
+
+    fetchData()
+  }, [municipioSelect])
 
   const columns = [
     { label: 'Nombres', key: 'nombre' },
@@ -220,8 +296,8 @@ export default function Personas () {
     { label: 'Telefono', key: 'telefono' },
     { label: 'Edad', key: 'edad' },
     { label: 'Sexo', key: 'sexo' },
-    { label: 'Vivienda', key: 'VIVIENDA_id' },
-    { label: 'Municipio', key: 'MUNICIPIO_id' },
+    { label: 'Vivienda', key: 'municipio_nombre' },
+    { label: 'Municipio', key: 'vivienda_direccion' },
     { label: 'Cabeza de familia', key: 'PERSONA_cabeza_familia_id' },
     { label: 'Editar', key: 'acciones' } // Cambia el nombre aquí si lo prefieres
   ]
@@ -275,11 +351,11 @@ export default function Personas () {
 
   const filteredData = dataWithActions.filter(persona =>
     persona.apellido.toLowerCase().includes(search.toLowerCase()) ||
-    persona.MUNICIPIO_id.toLowerCase().includes(search.toLowerCase())
+    persona.municipio_nombre.toLowerCase().includes(search.toLowerCase())
   )
 
   return (
-    <div className='items-center h-screen justify-items-center p-8 pb-20 gap-16 '>
+    <div className='items-center h-screen justify-items-center p-8 pb-20 gap-16 overflow-y-auto'>
       <main className="flex gap-8 justify-center w-full">
         <div className='flex flex-col justify-evenly w-1/2 items-center gap-6'>
           <h1 className='title'>
@@ -295,7 +371,7 @@ export default function Personas () {
                 onChange={(e) => setSearch(e.target.value)}
               />
               <Button
-                onClick={openAddForm}
+                onPress={openAddForm}
                 className="w-1/4"
                 color="primary"
                 auto
@@ -316,6 +392,8 @@ export default function Personas () {
             campos={campos}
             action={sendAddForm}
             botonTexto="Agregar Persona"
+            setSelect={setMunicipioSelect}
+
             />
             <Formulario
             estado = {estadoForm2}
@@ -325,6 +403,7 @@ export default function Personas () {
             values={personaToEdit}
             action={sendEditForm}
             botonTexto="Editar Persona"
+            setSelect={setMunicipioSelect}
             />
           </div>
         </div>
