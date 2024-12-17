@@ -114,12 +114,31 @@ export async function POST (request) {
 
 export async function GET () {
   try {
-    const result = await dbConnection.query('SELECT * FROM PERSONA')
+    const result = await dbConnection.query(`
+            SELECT
+                P.id,
+                P.nombre,
+                P.apellido,
+                P.telefono,
+                P.edad,
+                P.sexo,
+                M.nombre AS municipio_nombre,
+                V.direccion AS vivienda_direccion,
+                P.MUNICIPIO_id,
+                P.VIVIENDA_id,
+                P.PERSONA_cabeza_familia_id
+            FROM
+                PERSONA P
+            JOIN
+                MUNICIPIO M ON P.MUNICIPIO_id = M.id
+            JOIN
+                VIVIENDA V ON P.VIVIENDA_id = V.id
+        `)
     return NextResponse.json(result)
   } catch (error) {
-    console.error('Error al obtener municipios:', error)
+    console.error('Error al obtener personas:', error)
     return NextResponse.json({
-      message: 'Error al obtener municipios',
+      message: 'Error al obtener personas',
       error: error.message
     }, { status: 500 })
   }
