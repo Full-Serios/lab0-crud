@@ -12,8 +12,8 @@ export default {
     extend: {
       fontFamily: {
         roboto: ['Roboto', 'sans-serif'],
-        playfair: ['Playfair Display', 'serif'],
-        raleway: ['Raleway', 'sans-serif']
+        raleway: ['Raleway', 'sans-serif'],
+        merriweather: ['Merriweather Sans', 'serif']
       },
       fontSize: {
         18: '18px',
@@ -34,6 +34,9 @@ export default {
           primary: '#383838',
           secondary: '#4F4F4F'
         }
+      },
+      maxWidth: {
+        '5/6': '83.333333%'
       }
     }
   },

@@ -15,6 +15,9 @@ export default function Viviendas () {
   const [viviendas, setViviendas] = useState([])
   const [viviendaToEdit, setViviendaToEdit] = useState(null)
 
+  const [isLoading, setIsLoading] = useState(true)
+
+  const [municipioSelect, setMunicipioSelect] = useState(0)
   const [campos, setCampos] = useState(
     [
       {
@@ -130,7 +133,7 @@ export default function Viviendas () {
 
   const loadViviendas = async () => {
     try {
-      const res = await axios.get('http://localhost:3000/api/vivienda')
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}vivienda`)
       setViviendas(res.data)
     } catch (error) {
       console.error('Error al obtener viviendas: ', error)
@@ -139,7 +142,7 @@ export default function Viviendas () {
 
   const loadBarrios = async () => {
     try {
-      const res = await axios.get('http://localhost:3000/api/barrio')
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}barrio`)
       const barriosData = res.data
 
       const options = barriosData.map((bar) => ({
@@ -161,7 +164,7 @@ export default function Viviendas () {
 
   const loadMunicipios = async () => {
     try {
-      const res = await axios.get('http://localhost:3000/api/municipio')
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}municipio`)
       const municipiosData = res.data
 
       const options = municipiosData.map((muni) => ({
@@ -185,12 +188,21 @@ export default function Viviendas () {
     const fetchData = async () => {
       await loadMunicipios()
       await loadViviendas()
-      await loadBarrios()
+      setIsLoading(false)
     }
 
     fetchData()
   }, [])
 
+  useEffect(() => {
+    const fetchData = async () => {
+      if (municipioSelect) {
+        await loadBarrios(municipioSelect)
+      }
+    }
+
+    fetchData()
+  }, [municipioSelect])
   const camposEditables = campos.filter(campo =>
     campo.name === 'capacidad' || campo.name === 'niveles' || campo.name === 'tipo' || campo.name === 'estrato'
   )
@@ -201,9 +213,9 @@ export default function Viviendas () {
     { label: 'Niveles', key: 'niveles' },
     { label: 'Tipo', key: 'tipo' },
     { label: 'Estrato', key: 'estrato' },
-    { label: 'Barrio', key: 'barrio' }, // Cambia el nombre aquí si lo prefieres
-    { label: 'Municipio', key: 'municipio' }, // Cambia el nombre aquí si lo prefieres
-    { label: 'Editar', key: 'acciones' } // Cambia el nombre aquí si lo prefieres
+    { label: 'Barrio', key: 'barrio_nombre' },
+    { label: 'Municipio', key: 'municipio_nombre' },
+    { label: 'Editar', key: 'acciones' }
   ]
 
   const openEditForm = (vivienda) => {
@@ -217,7 +229,7 @@ export default function Viviendas () {
 
   const sendEditForm = async (data) => {
     try {
-      const res = await axios.put(`http://localhost:3000/api/vivienda/${data.id}`, data, {
+      const res = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}vivienda/${data.id}`, data, {
         headers: {
           'Content-Type': 'application/json'
         }
@@ -230,7 +242,7 @@ export default function Viviendas () {
 
   const sendAddForm = async (data) => {
     try {
-      const res = await axios.post('http://localhost:3000/api/vivienda', data, {
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}vivienda`, data, {
         headers: {
           'Content-Type': 'application/json'
         }
@@ -260,9 +272,9 @@ export default function Viviendas () {
   )
 
   return (
-    <div className='items-center h-screen justify-items-center p-8 pb-20 gap-16 '>
+    <div className='items-center h-screen justify-items-center p-8 pb-20 gap-16 overflow-y-auto'>
       <main className="flex gap-8 justify-center w-full">
-        <div className='flex flex-col justify-evenly w-1/2 items-center gap-6'>
+        <div className='flex flex-col justify-evenly w-5/6 items-center gap-6'>
           <h1 className='title'>
             Viviendas
           </h1>
@@ -270,7 +282,7 @@ export default function Viviendas () {
             <div className="flex items-center gap-4">
               <Input
                 type="text"
-                placeholder="Filtra por barrio o municipio"
+                placeholder="Busca por barrio o municipio"
                 variant={'bordered'}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -288,6 +300,7 @@ export default function Viviendas () {
               <TableContent
                 columns={columns}
                 data={filteredData}
+                isLoading={isLoading}
               />
             </div>
             <Formulario
@@ -297,6 +310,7 @@ export default function Viviendas () {
             campos={campos}
             action={sendAddForm}
             botonTexto="Agregar Vivienda"
+            setSelect={setMunicipioSelect}
             />
             <Formulario
             estado = {estadoForm2}
@@ -306,6 +320,7 @@ export default function Viviendas () {
             values={viviendaToEdit}
             action={sendEditForm}
             botonTexto="Editar Vivienda"
+            setSelect={setMunicipioSelect}
             />
           </div>
         </div>

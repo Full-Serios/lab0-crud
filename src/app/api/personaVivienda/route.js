@@ -22,7 +22,7 @@ export async function POST (request) {
     // Si ya existe devuelve error
     if (existingOwner.length > 0) {
       return NextResponse.json({
-        message: 'Esta persona ya tiene esta vivienda',
+        message: 'Esta persona ya tiene esta vivienda'
       }, { status: 400 })
     }
 
@@ -37,7 +37,7 @@ export async function POST (request) {
     // Si ya existe devuelve error
     if (existingOwnerProperty.length > 0) {
       return NextResponse.json({
-        message: 'Esta vivienda ya tiene propietario',
+        message: 'Esta vivienda ya tiene propietario'
       }, { status: 400 })
     }
 

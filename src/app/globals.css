@@ -2,8 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Merriweather Sans';
+  src: url('/fonts/MerriweatherSans-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Raleway:wght@600&family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@600;700&family=Roboto&display=swap');
+
+@layer utilities {
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .no-scrollbar {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+  }
+}
+
+
 
 body {
   background-color: #f5f5f5;
@@ -17,7 +37,7 @@ body {
 }
 
 .title {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Merriweather Sans', serif;
   font-size: 40px;
   font-weight: 700;
   color: #1A3D5D;

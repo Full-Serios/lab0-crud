@@ -15,6 +15,8 @@ export default function Barrios () {
   const [barrios, setBarrios] = useState([])
   const [barrioToEdit, setBarrioToEdit] = useState(null)
 
+  const [isLoading, setIsLoading] = useState(true)
+
   const [campos, setCampos] = useState(
     [
       {
@@ -59,7 +61,7 @@ export default function Barrios () {
   useEffect(() => {
     const loadBarrios = async () => {
       try {
-        const res = await axios.get('http://localhost:3000/api/barrio')
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}barrio`)
         setBarrios(res.data)
       } catch (error) {
         console.error('Error al obtener barrios: ', error)
@@ -67,13 +69,14 @@ export default function Barrios () {
     }
 
     loadBarrios()
+    setIsLoading(false)
   }, [])
 
   // Fetch municipios options
   useEffect(() => {
     const loadMunicipios = async () => {
       try {
-        const res = await axios.get('http://localhost:3000/api/municipio')
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}municipio`)
         const municipiosData = res.data
 
         const options = municipiosData.map((muni) => ({
@@ -118,7 +121,7 @@ export default function Barrios () {
 
   const sendEditForm = async (data) => {
     try {
-      const res = await axios.put(`http://localhost:3000/api/barrio/${data.id}`, data, {
+      const res = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}barrio/${data.id}`, data, {
         headers: {
           'Content-Type': 'application/json'
         }
@@ -131,7 +134,7 @@ export default function Barrios () {
 
   const sendAddForm = async (data) => {
     try {
-      const res = await axios.post('http://localhost:3000/api/barrio', data, {
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}barrio`, data, {
         headers: {
           'Content-Type': 'application/json'
         }
@@ -163,7 +166,7 @@ export default function Barrios () {
   return (
     <div className='items-center h-screen justify-items-center p-8 pb-20 gap-16 overflow-y-auto scrollbar-hide'>
       <main className="flex gap-8 justify-center w-full">
-        <div className='flex flex-col justify-evenly w-1/2 items-center gap-6'>
+        <div className='flex flex-col justify-evenly w-5/6 items-center gap-6'>
           <h1 className='title'>
             Barrios
           </h1>
@@ -171,7 +174,7 @@ export default function Barrios () {
             <div className="flex items-center gap-4">
               <Input
                 type="text"
-                placeholder="Filtra por barrio o municipio"
+                placeholder="Busca por barrio o municipio"
                 variant={'bordered'}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -189,6 +192,7 @@ export default function Barrios () {
               <TableContent
                 columns={columns}
                 data={filteredData}
+                isLoading={isLoading}
               />
             </div>
             <Formulario

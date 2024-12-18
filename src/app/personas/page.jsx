@@ -15,6 +15,8 @@ export default function Personas () {
   const [personaToEdit, setPersonaToEdit] = useState(null)
   const [personas, setPersonas] = useState([])
 
+  const [isLoading, setIsLoading] = useState(true)
+
   const [municipioSelect, setMunicipioSelect] = useState(0)
   const [campos, setCampos] = useState(
     [
@@ -206,7 +208,7 @@ export default function Personas () {
 
   const loadMunicipios = async () => {
     try {
-      const res = await axios.get('http://localhost:3000/api/municipio')
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}municipio`)
       const municipiosData = res.data
 
       const options = municipiosData.map((muni) => ({
@@ -235,7 +237,7 @@ export default function Personas () {
 
   const loadPersonas = async () => {
     try {
-      const res = await axios.get('http://localhost:3000/api/persona')
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}persona`)
       setPersonas(res.data)
     } catch (error) {
       console.error('Error al obtener personas: ', error)
@@ -244,7 +246,7 @@ export default function Personas () {
 
   const loadVivienda = async (municipioId) => {
     try {
-      const res = await axios.get(`http://localhost:3000/api/vivienda?municipioId=${municipioId}`)
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}vivienda/${municipioId}`)
       const viviendaData = res.data
 
       const options = viviendaData.map((vivienda) => ({
@@ -275,6 +277,7 @@ export default function Personas () {
     const fetchData = async () => {
       await loadMunicipios()
       await loadPersonas()
+      setIsLoading(false)
     }
 
     fetchData()
@@ -291,6 +294,7 @@ export default function Personas () {
   }, [municipioSelect])
 
   const columns = [
+    { label: 'Documento', key: 'id' },
     { label: 'Nombres', key: 'nombre' },
     { label: 'Apellidos', key: 'apellido' },
     { label: 'Telefono', key: 'telefono' },
@@ -313,7 +317,7 @@ export default function Personas () {
 
   const sendEditForm = async (data) => {
     try {
-      const res = await axios.put(`http://localhost:3000/api/persona/${data.id}`, data, {
+      const res = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}persona/${data.id}`, data, {
         headers: {
           'Content-Type': 'application/json'
         }
@@ -326,7 +330,7 @@ export default function Personas () {
 
   const sendAddForm = async (data) => {
     try {
-      const res = await axios.post('http://localhost:3000/api/persona', data, {
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}persona`, data, {
         headers: {
           'Content-Type': 'application/json'
         }
@@ -351,13 +355,13 @@ export default function Personas () {
 
   const filteredData = dataWithActions.filter(persona =>
     persona.apellido.toLowerCase().includes(search.toLowerCase()) ||
-    persona.municipio_nombre.toLowerCase().includes(search.toLowerCase())
+    persona.id.toString().includes(search.toLowerCase())
   )
 
   return (
     <div className='items-center h-screen justify-items-center p-8 pb-20 gap-16 overflow-y-auto'>
       <main className="flex gap-8 justify-center w-full">
-        <div className='flex flex-col justify-evenly w-1/2 items-center gap-6'>
+        <div className='flex flex-col justify-evenly w-5/6 items-center gap-6'>
           <h1 className='title'>
             Personas
           </h1>
@@ -365,7 +369,7 @@ export default function Personas () {
             <div className="flex items-center gap-4">
               <Input
                 type="text"
-                placeholder="Filtra por apellido o municipio"
+                placeholder="Busca por número de documento o apellido"
                 variant={'bordered'}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -383,6 +387,7 @@ export default function Personas () {
               <TableContent
                 columns={columns}
                 data={filteredData}
+                isLoading={isLoading}
               />
             </div>
             <Formulario

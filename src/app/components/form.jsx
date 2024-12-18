@@ -50,9 +50,8 @@ const Formulario = ({ titulo, campos, botonTexto, estado, cambiarEstado, action,
   return (
     <>
       {estado &&
-        <div className="w-screen h-screen fixed top-0 left-0 bg-slate-300 bg-opacity-40 flex justify-center items-center overflow-y-auto">
-          <form onSubmit={onSubmit} noValidate>
-            <div className="min-w-96 w-auto h-auto bg-white p-5 overflow-auto rounded-lg">
+        <div className="w-screen h-screen fixed top-0 left-0 bg-slate-300 bg-opacity-40 flex justify-center items-center overflow-y-auto no-scrollbar">
+            <div className="min-w-96 w-auto max-h-[90vh] bg-white p-5 overflow-y-auto rounded-lg no-scrollbar">
               <div className="relative">
                 <button
                   onClick={() => {
@@ -76,6 +75,7 @@ const Formulario = ({ titulo, campos, botonTexto, estado, cambiarEstado, action,
                   </svg>
                 </button>
               </div>
+            <form onSubmit={onSubmit} noValidate>
               <h1 className="subtitle text-center">
                 {titulo}
               </h1>
@@ -87,7 +87,14 @@ const Formulario = ({ titulo, campos, botonTexto, estado, cambiarEstado, action,
                       <div key={campo.name}>
                         <Select
                           clearable
-                          label={campo.label}
+                          label={
+                            <span>
+                              {campo.label}
+                              {campo.validations?.required?.value && (
+                                <strong className="text-red-500"> *</strong>
+                              )}
+                            </span>
+                          }
                           placeholder={campo.placeholder}
                           name={campo.name}
                           {...register(campo.name, campo.validations)}
@@ -96,7 +103,7 @@ const Formulario = ({ titulo, campos, botonTexto, estado, cambiarEstado, action,
                           onChange={(e) => {
                             setValue(campo.name, e.target.value)
 
-                            if (campo.name === 'MUNICIPIO_id' && (titulo === 'Registro de Vivienda' || titulo === 'Registro de Persona' || titulo === 'Editar Persona')) setSelect(e.target.value)
+                            if (campo.name === 'MUNICIPIO_id' && (titulo === 'Registro de Vivienda' || titulo === 'Registro de Persona' || titulo === 'Editar Persona' || titulo === 'Editar Vivienda' || titulo === 'Registro de Vivienda')) setSelect(e.target.value)
                           }}
                         >
                           {campo.options.map(option => (
@@ -112,7 +119,14 @@ const Formulario = ({ titulo, campos, botonTexto, estado, cambiarEstado, action,
                         <Input
                           type={campo.type}
                           clearable
-                          label={campo.label}
+                          label={
+                            <span>
+                              {campo.label}
+                              {campo.validations?.required?.value && (
+                                <strong className="text-red-500"> *</strong>
+                              )}
+                            </span>
+                          }
                           placeholder={campo.placeholder}
                           name={campo.name}
                           {...register(campo.name, campo.validations)}
@@ -133,9 +147,10 @@ const Formulario = ({ titulo, campos, botonTexto, estado, cambiarEstado, action,
                 >
                   {botonTexto}
                 </Button>
+
               </div>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
       }
     </>

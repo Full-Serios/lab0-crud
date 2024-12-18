@@ -15,6 +15,8 @@ export default function Municipios () {
   const [municipios, setMunicipios] = useState([])
   const [municipioToEdit, setMunicipioToEdit] = useState(null)
 
+  const [isLoading, setIsLoading] = useState(true)
+
   const [campos, setCampos] = useState(
     [
       {
@@ -62,6 +64,10 @@ export default function Municipios () {
           min: {
             value: 1,
             message: 'La población debe ser mayor a 0'
+          },
+          validate: {
+            isInteger: value =>
+              Number.isInteger(Number(value)) || 'El número debe ser un entero'
           }
         }
       },
@@ -84,7 +90,7 @@ export default function Municipios () {
   useEffect(() => {
     const loadMunicipios = async () => {
       try {
-        const res = await axios.get('http://localhost:3000/api/municipio')
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}municipio`)
         setMunicipios(res.data)
       } catch (error) {
         console.error('Error al obtener municipios: ', error)
@@ -92,12 +98,13 @@ export default function Municipios () {
     }
 
     loadMunicipios()
+    setIsLoading(false)
   }, [])
 
   useEffect(() => {
     const loadDepartamentos = async () => {
       try {
-        const res = await axios.get('http://localhost:3000/api/departamento')
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}departamento`)
         const departamentosData = res.data
 
         const options = departamentosData.map((dept) => ({
@@ -144,7 +151,7 @@ export default function Municipios () {
 
   const sendEditForm = async (data) => {
     try {
-      const res = await axios.put(`http://localhost:3000/api/municipio/${data.id}`, data, {
+      const res = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}municipio/${data.id}`, data, {
         headers: {
           'Content-Type': 'application/json'
         }
@@ -157,7 +164,7 @@ export default function Municipios () {
 
   const sendAddForm = async (data) => {
     try {
-      const res = await axios.post('http://localhost:3000/api/municipio', data, {
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}municipio`, data, {
         headers: {
           'Content-Type': 'application/json'
         }
@@ -189,7 +196,7 @@ export default function Municipios () {
   return (
     <div className='items-center h-screen justify-items-center p-8 pb-20 gap-16 overflow-y-auto scrollbar-hide'>
       <main className="flex gap-8 justify-center w-full">
-        <div className='flex flex-col justify-evenly w-1/2 items-center gap-6'>
+        <div className='flex flex-col justify-evenly w-5/6 items-center gap-6'>
           <h1 className='title'>
             Municipios
           </h1>
@@ -197,7 +204,7 @@ export default function Municipios () {
             <div className="flex items-center gap-4">
               <Input
                 type="text"
-                placeholder="Filtra por departamento o capital"
+                placeholder="Busca por departamento o capital"
                 variant={'bordered'}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -215,6 +222,7 @@ export default function Municipios () {
               <TableContent
                 columns={columns}
                 data={filteredData}
+                isLoading={isLoading}
               />
             </div>
             <Formulario
