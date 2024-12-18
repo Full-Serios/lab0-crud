@@ -53,3 +53,41 @@ export async function PUT (request, { params }) {
     }, { status: 500 })
   }
 }
+
+export async function GET (request, { params }) {
+  try {    
+    const { id } = params
+
+    const result = await dbConnection.query(`
+            SELECT
+                V.id,
+                V.direccion,
+                V.capacidad,
+                V.niveles,
+                V.tipo,
+                V.estrato,
+                B.nombre AS barrio_nombre,
+                M.nombre AS municipio_nombre,
+                V.BARRIO_id,
+                V.MUNICIPIO_id
+            FROM
+                VIVIENDA V
+            JOIN
+                BARRIO B ON V.BARRIO_id = B.id
+            JOIN
+                MUNICIPIO M ON V.MUNICIPIO_id = M.id
+            WHERE
+                V.MUNICIPIO_id = ?
+        `,
+        [
+          id
+        ])
+    return NextResponse.json(result)
+  } catch (error) {
+    console.error('Error al obtener viviendas:', error)
+    return NextResponse.json({
+      message: 'Error al obtener viviendas',
+      error: error.message
+    }, { status: 500 })
+  }
+}
