@@ -56,11 +56,12 @@ export async function PUT (request, { params }) {
         SET PERSONA_id = ?,
         VIVIENDA_id = ?,
         fecha_adquisicion = CURRENT_TIMESTAMP
-        WHERE VIVIENDA_id = ?`,
+        WHERE VIVIENDA_id = ? AND PERSONA_id = ?`,
         [
           PERSONA_id,
           VIVIENDA_id,
-          id_vivienda
+          id_vivienda,
+          id_persona
         ]
       )
 
