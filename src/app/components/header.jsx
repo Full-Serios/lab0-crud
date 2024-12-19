@@ -8,8 +8,8 @@ export default function Header () {
   const isActive = (path) => pathname === path
 
   return (
-    <header>
-      <nav className='py-5 text-white flex justify-center'>
+    <header className='bg-white shadow-lg rounded-lg mx-4 mt-4 mb-4'>
+      <nav className='py-4 px-6 text-white flex justify-center rounded-lg'>
         <ul className='flex justify-evenly text-gray-primary w-5/6'>
           <Link
             className={`hover:font-bold ${isActive('/') ? 'font-bold text-blue-900' : ''}`}
@@ -46,6 +46,12 @@ export default function Header () {
             href="/personas"
           >
             Personas
+            </Link>
+          <Link
+            className={`hover:font-bold ${isActive('/propietarios') ? 'font-bold text-blue-900' : ''}`}
+            href="/propietarios"
+          >
+            Propietarios
             </Link>
         </ul>
       </nav>

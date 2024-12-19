@@ -43,11 +43,11 @@ export default function TableContent ({ columns, data, isLoading }) {
         </TableHeader>
       <TableBody
         isLoading={isLoading}
-        loadingContent={<Spinner label="Loading..." />}
+        loadingContent={<Spinner label="Cargando la información..." />}
         items={items}
       >
           {(item) =>
-            <TableRow key={item.id}>
+            <TableRow key={item?.id || item?.PERSONA_id}>
               {columns.map((column) => (
                 <TableCell key={column.key}>{getKeyValue(item, column.key)}</TableCell>
               ))}

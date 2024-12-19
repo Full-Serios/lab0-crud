@@ -13,7 +13,7 @@ export default function Personas () {
   const [estadoForm2, cambiarEstadoForm2] = useState(false)// Form para editar
 
   const [personaToEdit, setPersonaToEdit] = useState(null)
-  const [personas, setPersonas] = useState([])
+  const [propietarios, setPropietarios] = useState([])
 
   const [isLoading, setIsLoading] = useState(true)
 
@@ -22,109 +22,20 @@ export default function Personas () {
     [
       {
         label: 'Documento Identidad',
-        placeholder: 'Número de documento',
-        name: 'id',
-        type: 'number',
-        validations: {
-          required: {
-            value: true,
-            message: 'Este campo es requerido'
-          },
-          validate: {
-            isInteger: value =>
-              Number.isInteger(Number(value)) || 'El número debe ser un entero'
-          },
-          minLength: {
-            value: 8,
-            message: 'El número debe tener al menos 8 dígitos'
-          },
-          maxLength: {
-            value: 10,
-            message: 'El número no puede tener más de 10 dígitos'
-          }
-        }
-      },
-      {
-        label: 'Nombres',
-        placeholder: 'Nombres completos',
-        name: 'nombre',
-        type: 'text',
-        validations: {
-          required: {
-            value: true,
-            message: 'Este campo es requerido'
-          },
-          pattern: {
-            value: /^[a-zA-Z\s]+$/,
-            message: 'El nombre solo puede contener letras y espacios'
-          }
-        }
-      },
-      {
-        label: 'Apellidos',
-        placeholder: 'Apellidos completos',
-        name: 'apellido',
-        type: 'text',
-        validations: {
-          required: {
-            value: true,
-            message: 'Este campo es requerido'
-          },
-          pattern: {
-            value: /^[a-zA-Z\s]+$/,
-            message: 'El nombre solo puede contener letras y espacios'
-          }
-        }
-      },
-      {
-        label: 'Telefono',
-        placeholder: 'Telefono',
-        name: 'telefono',
-        type: 'number',
-        validations: {
-          pattern: {
-            value: /^3\d{9}$/,
-            message: 'El número debe iniciar con 3 y tener 10 dígitos'
-          },
-          validate: {
-            isInteger: value =>
-              Number.isInteger(Number(value)) || 'El número debe ser un entero'
-          }
-        }
-      },
-      {
-        label: 'Edad',
-        placeholder: 'Edad',
-        name: 'edad',
-        type: 'number',
-        validations: {
-          min: {
-            value: 1,
-            message: 'La edad no puede ser menor que 1'
-          },
-          max: {
-            value: 120,
-            message: 'La edad no puede ser mayor que 120'
-          },
-          validate: {
-            isInteger: value =>
-              Number.isInteger(Number(value)) || 'El número debe ser un entero'
-          }
-        }
-      },
-      {
-        label: 'Sexo',
-        placeholder: 'Sexo',
-        name: 'sexo',
+        placeholder: 'Número de documento del propietario',
+        name: 'PERSONA_id',
         type: 'select',
-        options: [
-          { id: 'Masculino', name: 'Masculino' },
-          { id: 'Femenino', name: 'Femenino' }
-        ]
+        options: [],
+        validations: {
+          required: {
+            value: true,
+            message: 'Este campo es requerido'
+          }
+        }
       },
       {
         label: 'Municipio',
-        placeholder: 'Municipio de residencia',
+        placeholder: 'Municipio',
         name: 'MUNICIPIO_id',
         type: 'select',
         options: [],
@@ -137,7 +48,7 @@ export default function Personas () {
       },
       {
         label: 'Vivienda',
-        placeholder: 'Dirección de residencia',
+        placeholder: 'Dirección de la vivienda',
         name: 'VIVIENDA_id',
         type: 'select',
         options: [],
@@ -147,40 +58,20 @@ export default function Personas () {
             message: 'Este campo es requerido'
           }
         }
+      },
+      {
+        label: 'Fecha adquisición',
+        placeholder: 'Fecha de adquisición de la vivienda',
+        name: 'fecha_adquisicion',
+        type: 'date'
       }
     ]
   )
 
   const [camposEditables, setCamposEditables] = useState([
     {
-      label: 'Telefono',
-      placeholder: 'Telefono',
-      name: 'telefono',
-      type: 'number',
-      validations: {
-        pattern: {
-          value: /^3\d{9}$/,
-          message: 'El número debe iniciar con 3 y tener 10 dígitos'
-        },
-        validate: {
-          isInteger: value =>
-            Number.isInteger(Number(value)) || 'El número debe ser un entero'
-        }
-      }
-    },
-    {
-      label: 'Sexo',
-      placeholder: 'Sexo',
-      name: 'sexo',
-      type: 'select',
-      options: [
-        { id: 'Masculino', name: 'Masculino' },
-        { id: 'Femenino', name: 'Femenino' }
-      ]
-    },
-    {
       label: 'Municipio',
-      placeholder: 'Municipio de residencia',
+      placeholder: 'Municipi',
       name: 'MUNICIPIO_id',
       type: 'select',
       options: [],
@@ -203,6 +94,12 @@ export default function Personas () {
           message: 'Este campo es requerido'
         }
       }
+    },
+    {
+      label: 'Fecha adquisición',
+      placeholder: 'Fecha de adquisición de la vivienda',
+      name: 'fecha_adquisicion',
+      type: 'date'
     }
   ])
 
@@ -235,12 +132,34 @@ export default function Personas () {
     }
   }
 
-  const loadPersonas = async () => {
+  const loadDocumentos = async () => {
     try {
       const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}persona`)
-      setPersonas(res.data)
+      const personasData = res.data
+
+      const options = personasData.map((persona) => ({
+        id: persona.id.toString(),
+        name: persona.id
+      }))
+
+      setCampos((prevCampos) =>
+        prevCampos.map((campo) =>
+          campo.name === 'PERSONA_id'
+            ? { ...campo, options }
+            : campo
+        )
+      )
     } catch (error) {
       console.error('Error al obtener personas: ', error)
+    }
+  }
+
+  const loadPropietarios = async () => {
+    try {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}personaVivienda`)
+      setPropietarios(res.data)
+    } catch (error) {
+      console.error('Error al obtener propietarios: ', error)
     }
   }
 
@@ -276,7 +195,8 @@ export default function Personas () {
   useEffect(() => {
     const fetchData = async () => {
       await loadMunicipios()
-      await loadPersonas()
+      await loadPropietarios()
+      await loadDocumentos()
       setIsLoading(false)
     }
 
@@ -294,16 +214,12 @@ export default function Personas () {
   }, [municipioSelect])
 
   const columns = [
-    { label: 'Documento', key: 'id' },
-    { label: 'Nombres', key: 'nombre' },
-    { label: 'Apellidos', key: 'apellido' },
-    { label: 'Telefono', key: 'telefono' },
-    { label: 'Edad', key: 'edad' },
-    { label: 'Sexo', key: 'sexo' },
-    { label: 'Vivienda', key: 'vivienda_direccion' },
-    { label: 'Municipio', key: 'municipio_nombre' },
-    { label: 'Cabeza de familia', key: 'PERSONA_cabeza_familia_id' },
-    { label: 'Editar', key: 'acciones' } // Cambia el nombre aquí si lo prefieres
+    { label: 'Documento', key: 'PERSONA_id' },
+    { label: 'Nombres', key: 'nombre_persona' },
+    { label: 'Apellidos', key: 'apellido_persona' },
+    { label: 'Vivienda', key: 'direccion_vivienda' },
+    { label: 'Fecha de adquisición', key: 'fecha_adquisicion' }
+    // { label: 'Editar', key: 'acciones' } // Cambia el nombre aquí si lo prefieres
   ]
 
   const openEditForm = (persona) => {
@@ -330,17 +246,18 @@ export default function Personas () {
 
   const sendAddForm = async (data) => {
     try {
-      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}persona`, data, {
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}personaVivienda`, data, {
         headers: {
           'Content-Type': 'application/json'
         }
       })
       return { type: 'success', message: res.data.message }
     } catch (error) {
-      return { type: 'error', message: 'Error al registrar la persona' }
+      console.error('Error al registrar la persona:', error)
+      return { type: 'error', message: 'Error al registrar la persona', code: error.response.status, errorResponse: error.response.data.message }
     }
   }
-  const dataWithActions = personas.map((persona) => ({
+  const dataWithActions = propietarios.map((persona) => ({
     ...persona,
     acciones: (
       <button
@@ -354,8 +271,8 @@ export default function Personas () {
   }))
 
   const filteredData = dataWithActions.filter(persona =>
-    persona.apellido.toLowerCase().includes(search.toLowerCase()) ||
-    persona.id.toString().includes(search.toLowerCase())
+    persona.apellido_persona.toLowerCase().includes(search.toLowerCase()) ||
+    persona.PERSONA_id.toString().includes(search.toLowerCase())
   )
 
   return (
@@ -363,7 +280,7 @@ export default function Personas () {
       <main className="flex gap-8 justify-center w-full">
         <div className='flex flex-col justify-evenly w-5/6 items-center gap-6'>
           <h1 className='title'>
-            Personas
+            Propietarios de viviendas
           </h1>
           <div className='flex flex-col gap-4 w-full'>
             <div className="flex items-center gap-4">
@@ -380,7 +297,7 @@ export default function Personas () {
                 color="primary"
                 auto
               >
-                Añadir Personas
+                Añadir Propietario
               </Button>
             </div>
             <div>

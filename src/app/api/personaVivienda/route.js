@@ -43,7 +43,7 @@ export async function POST (request) {
 
     // Si no existe hace la inserción
     const result = await dbConnection.query(
-      `INSERT INTO VIVIENDA
+      `INSERT INTO PERSONA_has_VIVIENDA
       (PERSONA_id, VIVIENDA_id, fecha_adquisicion)
       VALUES (?, ?, ?)`,
       [

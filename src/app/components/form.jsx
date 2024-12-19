@@ -1,12 +1,13 @@
-import { Input, Button, Select, SelectItem } from '@nextui-org/react'
+import { Input, Button, Select, SelectItem, DatePicker } from '@nextui-org/react'
 import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { getLocalTimeZone, today } from '@internationalized/date'
 
 const Formulario = ({ titulo, campos, botonTexto, estado, cambiarEstado, action, values, setSelect }) => {
   // Hook to manage form data
-  const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm()
+  const { control, register, handleSubmit, formState: { errors }, reset, setValue } = useForm()
   const [isEnable, setIsEnable] = useState(true)
 
   useEffect(() => {
@@ -22,19 +23,34 @@ const Formulario = ({ titulo, campos, botonTexto, estado, cambiarEstado, action,
       })
     )
 
-    setIsEnable(false)
+    if (cleanedData.fecha_adquisicion && cleanedData.fecha_adquisicion.year && cleanedData.fecha_adquisicion.month && cleanedData.fecha_adquisicion.day) {
+      // Convertir el mes y el día en formato de dos dígitos (con 0 si es necesario)
+      const month = String(cleanedData.fecha_adquisicion.month).padStart(2, '0')
+      const day = String(cleanedData.fecha_adquisicion.day).padStart(2, '0')
 
+      // Crear la fecha en el formato YYYY-MM-DD
+      cleanedData.fecha_adquisicion = `${cleanedData.fecha_adquisicion.year}-${month}-${day}`
+    }
+    console.log(cleanedData)
     const response = await action(cleanedData)
-
+    console.log(response)
     if (response.type === 'error') {
-      toast.error(response.message, {
-        position: 'top-center',
-        autoClose: 3000,
-        onClose: () => {
-          cambiarEstado(!estado)
-          window.location.reload()
-        }
-      })
+      if (response.code === 400) {
+        toast.error(response.errorResponse, {
+          position: 'top-center',
+          autoClose: 3000
+        })
+      } else {
+        toast.error(response.message, {
+          position: 'top-center',
+          autoClose: 3000,
+          onClose: () => {
+            cambiarEstado(!estado)
+            window.location.reload()
+          }
+        })
+        setIsEnable(false)
+      }
     } else {
       toast.success(response.message, {
         position: 'top-center',
@@ -44,6 +60,7 @@ const Formulario = ({ titulo, campos, botonTexto, estado, cambiarEstado, action,
           window.location.reload()
         }
       })
+      setIsEnable(false)
     }
   })
 
@@ -87,14 +104,8 @@ const Formulario = ({ titulo, campos, botonTexto, estado, cambiarEstado, action,
                       <div key={campo.name}>
                         <Select
                           clearable
-                          label={
-                            <span>
-                              {campo.label}
-                              {campo.validations?.required?.value && (
-                                <strong className="text-red-500"> *</strong>
-                              )}
-                            </span>
-                          }
+                          isRequired={campo.validations?.required?.value}
+                          label={campo.label}
                           placeholder={campo.placeholder}
                           name={campo.name}
                           {...register(campo.name, campo.validations)}
@@ -114,19 +125,44 @@ const Formulario = ({ titulo, campos, botonTexto, estado, cambiarEstado, action,
                         </Select>
                       </div>
                       )
-                    : (
+                    : campo.type === 'date'
+                      ? (
+                        <div key={campo.name}>
+                          <Controller
+                            control={control}
+                            name={campo.name}
+                            render={({ field }) => (
+                              <DatePicker
+                                clearable
+                                label={
+                                  <span>
+                                    {campo.label}
+                                    {campo.validations?.required?.value && (
+                                      <strong className="text-red-500"> *</strong>
+                                    )}
+                                  </span>
+                                }
+                                placeholder={campo.placeholder}
+                                name={campo.name}
+                                {...register(campo.name, campo.validations)}
+                                isInvalid={errors[campo.name] && true}
+                                errorMessage={errors[campo.name]?.message}
+                                onChange={(date) => field.onChange(date)}
+                                selected={field.value}
+                                maxValue={today(getLocalTimeZone())}
+                              />
+                            )}
+                          />
+
+                      </div>
+                        )
+                      : (
                       <div key={campo.name}>
                         <Input
                           type={campo.type}
                           clearable
-                          label={
-                            <span>
-                              {campo.label}
-                              {campo.validations?.required?.value && (
-                                <strong className="text-red-500"> *</strong>
-                              )}
-                            </span>
-                          }
+                          isRequired={campo.validations?.required?.value}
+                          label={campo.label}
                           placeholder={campo.placeholder}
                           name={campo.name}
                           {...register(campo.name, campo.validations)}
@@ -134,7 +170,7 @@ const Formulario = ({ titulo, campos, botonTexto, estado, cambiarEstado, action,
                           errorMessage={errors[campo.name]?.message}
                         />
                       </div>
-                      )
+                        )
                 ))}
               </div>
               <div className="flex justify-center">
