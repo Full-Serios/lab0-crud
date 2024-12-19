@@ -35,7 +35,7 @@ const Formulario = ({ titulo, campos, botonTexto, estado, cambiarEstado, action,
     const response = await action(cleanedData)
     console.log(response)
     if (response.type === 'error') {
-      if (response.code === 400) {
+      if (response.code !== 500) {
         toast.error(response.errorResponse, {
           position: 'top-center',
           autoClose: 3000
@@ -104,6 +104,7 @@ const Formulario = ({ titulo, campos, botonTexto, estado, cambiarEstado, action,
                       <div key={campo.name}>
                         <Select
                           clearable
+                          isDisabled={campo.isDisabled}
                           isRequired={campo.validations?.required?.value}
                           label={campo.label}
                           placeholder={campo.placeholder}
@@ -150,6 +151,7 @@ const Formulario = ({ titulo, campos, botonTexto, estado, cambiarEstado, action,
                                 onChange={(date) => field.onChange(date)}
                                 selected={field.value}
                                 maxValue={today(getLocalTimeZone())}
+                                isDisabled={campo.isDisabled}
                               />
                             )}
                           />
@@ -168,6 +170,7 @@ const Formulario = ({ titulo, campos, botonTexto, estado, cambiarEstado, action,
                           {...register(campo.name, campo.validations)}
                           isInvalid={errors[campo.name] && true}
                           errorMessage={errors[campo.name]?.message}
+                          isDisabled={campo.isDisabled}
                         />
                       </div>
                         )

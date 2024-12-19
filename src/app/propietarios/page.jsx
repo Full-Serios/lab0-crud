@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import EditIcon from '../components/EditIcon'
 import Formulario from '../components/form'
 import axios from 'axios'
+import DeleteIcon from '../components/DeleteIcon'
 
 export default function Personas () {
   const [search, setSearch] = useState('')
@@ -70,36 +71,32 @@ export default function Personas () {
 
   const [camposEditables, setCamposEditables] = useState([
     {
-      label: 'Municipio',
-      placeholder: 'Municipi',
-      name: 'MUNICIPIO_id',
-      type: 'select',
+      label: 'Documento Identidad',
+      placeholder: 'Número de documento del propietario',
+      name: 'PERSONA_id',
+      type: 'text',
       options: [],
       validations: {
         required: {
           value: true,
           message: 'Este campo es requerido'
         }
-      }
+      },
+      isDisabled: true
     },
     {
       label: 'Vivienda',
-      placeholder: 'Dirección de residencia',
+      placeholder: 'Dirección de la vivienda',
       name: 'VIVIENDA_id',
-      type: 'select',
+      type: 'text',
       options: [],
       validations: {
         required: {
           value: true,
           message: 'Este campo es requerido'
         }
-      }
-    },
-    {
-      label: 'Fecha adquisición',
-      placeholder: 'Fecha de adquisición de la vivienda',
-      name: 'fecha_adquisicion',
-      type: 'date'
+      },
+      isDisabled: true
     }
   ])
 
@@ -218,8 +215,8 @@ export default function Personas () {
     { label: 'Nombres', key: 'nombre_persona' },
     { label: 'Apellidos', key: 'apellido_persona' },
     { label: 'Vivienda', key: 'direccion_vivienda' },
-    { label: 'Fecha de adquisición', key: 'fecha_adquisicion' }
-    // { label: 'Editar', key: 'acciones' } // Cambia el nombre aquí si lo prefieres
+    { label: 'Fecha de adquisición', key: 'fecha_adquisicion' },
+    { label: 'Editar', key: 'acciones' } // Cambia el nombre aquí si lo prefieres
   ]
 
   const openEditForm = (persona) => {
@@ -233,14 +230,10 @@ export default function Personas () {
 
   const sendEditForm = async (data) => {
     try {
-      const res = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}persona/${data.id}`, data, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
+      const res = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}personaVivienda/${data.PERSONA_id}/${data.VIVIENDA_id}`)
       return { type: 'success', message: res.data.message }
     } catch (error) {
-      return { type: 'error', message: 'Error al editar la persona' }
+      return { type: 'error', message: 'Error al borrar la persona', code: error.response.status, errorResponse: error.response.data.message }
     }
   }
 
@@ -261,11 +254,15 @@ export default function Personas () {
     ...persona,
     acciones: (
       <button
-        onClick={() => openEditForm(persona)}
+        onClick={() => {
+          openEditForm(persona)
+          console.log(persona)
+        }
+}
         className="p-2 text-blue-500 hover:text-blue-700"
-        title="Editar"
+        title="Eliminar"
       >
-        <EditIcon className="w-6 h-6" />
+        <DeleteIcon className="w-6 h-6" />
       </button>
     )
   }))
@@ -310,21 +307,21 @@ export default function Personas () {
             <Formulario
             estado = {estadoForm1}
             cambiarEstado={cambiarEstadoForm1}
-            titulo="Registro de Persona"
+            titulo="Registro de Propietario"
             campos={campos}
             action={sendAddForm}
-            botonTexto="Agregar Persona"
+            botonTexto="Agregar Propietario"
             setSelect={setMunicipioSelect}
 
             />
             <Formulario
             estado = {estadoForm2}
             cambiarEstado={cambiarEstadoForm2}
-            titulo="Editar Persona"
+            titulo="¿Desea eliminar este registro?"
             campos={camposEditables}
             values={personaToEdit}
             action={sendEditForm}
-            botonTexto="Editar Persona"
+            botonTexto="Eliminar"
             setSelect={setMunicipioSelect}
             />
           </div>

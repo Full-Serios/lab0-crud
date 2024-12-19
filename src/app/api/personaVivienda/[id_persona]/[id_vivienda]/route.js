@@ -18,11 +18,11 @@ export async function PUT (request, { params }) {
         'SELECT * FROM PERSONA_has_VIVIENDA WHERE VIVIENDA_id = ?',
         [VIVIENDA_id]
       )
-      
+
       // Si la vivienda ya tiene propietario, no se puede actualizar
       if (existingOwnerProperty.length > 0) {
         return NextResponse.json({
-          message: 'Esta vivienda ya tiene propietario',
+          message: 'Esta vivienda ya tiene propietario'
         }, { status: 400 })
       }
     }
@@ -44,7 +44,7 @@ export async function PUT (request, { params }) {
       // Verificar si se actualizó algún registro
       if (result.affectedRows === 0) {
         return NextResponse.json({
-          message: 'No se pudo actualizar el propietario',
+          message: 'No se pudo actualizar el propietario'
         }, { status: 400 })
       }
     }
@@ -68,13 +68,13 @@ export async function PUT (request, { params }) {
       // Verificar si se actualizó algún registro
       if (result.affectedRows === 0) {
         return NextResponse.json({
-          message: 'No se pudo actualizar el propietario',
+          message: 'No se pudo actualizar el propietario'
         }, { status: 400 })
       }
     }
 
     return NextResponse.json({
-      message: 'Propietario actualizado correctamente',
+      message: 'Propietario actualizado correctamente'
     }, { status: 200 })
   } catch (error) {
     console.error('Error al actualizar propietario:', error)
@@ -102,30 +102,57 @@ export async function DELETE (request, { params }) {
     // Si no existe el registro, devuelve un error
     if (existingOwner.length === 0) {
       return NextResponse.json({
-        message: 'No existe un registro de propiedad para esta persona y vivienda',
+        message: 'No existe un registro de propiedad para esta persona y vivienda'
       }, { status: 404 })
     }
 
-    // Realizar la eliminación
-    const result = await dbConnection.query(
-      `DELETE FROM PERSONA_has_VIVIENDA 
-      WHERE PERSONA_id = ? AND VIVIENDA_id = ?`,
-      [
-        id_persona,
-        id_vivienda
-      ]
+    // Verifica si existe el registro de propiedad
+    const existingUser = await dbConnection.query(
+      'SELECT * FROM PERSONA WHERE VIVIENDA_id = ?',
+      [id_vivienda]
     )
 
-    // Verificar si se eliminó algún registro
-    if (result.affectedRows === 0) {
+    if (existingOwner.length !== 0) {
       return NextResponse.json({
-        message: 'No se pudo eliminar el registro de propiedad',
-      }, { status: 400 })
+        message: 'La vivienda no debe tener personas viviendo en ella'
+      }, { status: 404 })
     }
 
-    return NextResponse.json({
-      message: 'Registro de propiedad eliminado correctamente',
-    }, { status: 200 })
+    await dbConnection.beginTransaction()
+
+    try {
+      // Eliminar el registro de PERSONA_has_VIVIENDA
+      const deleteResult = await dbConnection.query(
+        `DELETE FROM PERSONA_has_VIVIENDA
+        WHERE PERSONA_id = ? AND VIVIENDA_id = ?`,
+        [id_persona, id_vivienda]
+      )
+
+      // Actualizar los campos en la tabla PERSONA
+      const updateResult = await dbConnection.query(
+        `UPDATE PERSONA
+          SET PERSONA_cabeza_familia_id = NULL
+         WHERE id = ?`,
+        [id_persona]
+      )
+
+      // Confirmar la transacción
+      await dbConnection.commit()
+
+      if (deleteResult.affectedRows === 0) {
+        return NextResponse.json({
+          message: 'No se pudo eliminar el registro de propiedad'
+        }, { status: 400 })
+      }
+
+      return NextResponse.json({
+        message: 'Registro de propiedad eliminado y datos de persona actualizados correctamente'
+      }, { status: 200 })
+    } catch (error) {
+      // Si hay algún error, revertir la transacción
+      await dbConnection.rollback()
+      throw error
+    }
   } catch (error) {
     console.error('Error al eliminar registro de propiedad:', error)
     return NextResponse.json({
